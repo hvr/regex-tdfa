@@ -18,6 +18,8 @@ import qualified Control.Monad.ST.Strict as S(ST)
 import Data.Sequence(Seq)
 import qualified Data.ByteString.Char8 as SBS(ByteString)
 import qualified Data.ByteString.Lazy.Char8 as LBS(ByteString)
+import qualified Data.Text as ST(Text)
+import qualified Data.Text.Lazy as LT(Text)
 
 import Text.Regex.Base(MatchArray,MatchOffset,MatchLength)
 import qualified Text.Regex.TDFA.IntArrTrieSet as Trie(lookupAsc)
@@ -40,8 +42,10 @@ err s = common_error "Text.Regex.TDFA.NewDFA.Engine_NC"  s
 set :: (MArray a e (S.ST s),Ix i) => a i e -> Int -> e -> S.ST s ()
 set = unsafeWrite
 
-{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> ([] Char) -> [MatchArray] #-}
-{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> (Seq Char) -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> [] Char  -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> Seq Char -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> ST.Text  -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> LT.Text  -> [MatchArray] #-}
 {-# SPECIALIZE execMatch :: Regex -> Position -> Char -> SBS.ByteString -> [MatchArray] #-}
 {-# SPECIALIZE execMatch :: Regex -> Position -> Char -> LBS.ByteString -> [MatchArray] #-}
 execMatch :: Uncons text => Regex -> Position -> Char -> text -> [MatchArray]

@@ -9,14 +9,18 @@ import qualified Data.IntSet as ISet(null)
 import Data.Sequence(Seq)
 import qualified Data.ByteString.Char8 as SBS(ByteString)
 import qualified Data.ByteString.Lazy.Char8 as LBS(ByteString)
+import qualified Data.Text as ST(Text)
+import qualified Data.Text.Lazy as LT(Text)
 
 import Text.Regex.Base()
 import Text.Regex.TDFA.Common hiding (indent)
 import Text.Regex.TDFA.NewDFA.Uncons (Uncons(uncons))
 import Text.Regex.TDFA.NewDFA.MakeTest(test_singleline,test_multiline)
 
-{-# SPECIALIZE matchTest :: Regex -> ([] Char) -> Bool #-}
-{-# SPECIALIZE matchTest :: Regex -> (Seq Char) -> Bool #-}
+{-# SPECIALIZE matchTest :: Regex -> [] Char  -> Bool #-}
+{-# SPECIALIZE matchTest :: Regex -> Seq Char -> Bool #-}
+{-# SPECIALIZE matchTest :: Regex -> ST.Text  -> Bool #-}
+{-# SPECIALIZE matchTest :: Regex -> LT.Text  -> Bool #-}
 {-# SPECIALIZE matchTest :: Regex -> SBS.ByteString -> Bool #-}
 {-# SPECIALIZE matchTest :: Regex -> LBS.ByteString -> Bool #-}
 matchTest :: Uncons text => Regex -> text -> Bool

@@ -37,6 +37,8 @@ import Data.Sequence(Seq,ViewL(..),viewl)
 import qualified Data.Sequence as Seq(null)
 import qualified Data.ByteString.Char8 as SBS(ByteString)
 import qualified Data.ByteString.Lazy.Char8 as LBS(ByteString)
+import qualified Data.Text as ST(Text)
+import qualified Data.Text.Lazy as LT(Text)
 
 import Text.Regex.Base(MatchArray,MatchOffset,MatchLength)
 import Text.Regex.TDFA.Common hiding (indent)
@@ -60,9 +62,11 @@ set = unsafeWrite
 
 noSource :: ((Index, Instructions),STUArray s Tag Position,OrbitLog)
 noSource = ((-1,err "noSource"),err "noSource",err "noSource")
- 
-{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> ([] Char) -> [MatchArray] #-}
-{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> (Seq Char) -> [MatchArray] #-}
+
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> [] Char  -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> Seq Char -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> ST.Text  -> [MatchArray] #-}
+{-# SPECIALIZE execMatch :: Regex -> Position -> Char -> LT.Text  -> [MatchArray] #-}
 {-# SPECIALIZE execMatch :: Regex -> Position -> Char -> SBS.ByteString -> [MatchArray] #-}
 {-# SPECIALIZE execMatch :: Regex -> Position -> Char -> LBS.ByteString -> [MatchArray] #-}
 execMatch :: Uncons text => Regex -> Position -> Char -> text -> [MatchArray]
