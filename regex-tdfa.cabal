@@ -165,3 +165,7 @@ test-suite regex-tdfa-unittest
 
   if flag(force-O2)
     ghc-options:        -O2
+
+  other-modules:        AdditionalTests
+                        AdditionalTests.Generate
+                        AdditionalTests.Fencepost

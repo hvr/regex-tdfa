@@ -54,7 +54,7 @@ nfaToDFA ((startIndex,aQNFA),aTagOp,aGroupInfo) co eo = Regex dfa startIndex ind
   dfa = indexesToDFA [startIndex]
   indexBounds = bounds aQNFA
   tagBounds = bounds aTagOp
-  ifa = (not (multiline co)) && isDFAFrontAnchored dfa
+  ifa = isDFAFrontAnchored (multiline co) dfa
 
   indexesToDFA = {-# SCC "nfaToDFA.indexesToDFA" #-} Trie.lookupAsc trie  -- Lookup in cache
 
@@ -294,14 +294,19 @@ bestTrans aTagOP (f:fs) | null fs = canonical f
     cw [] yy = foldr (\y rest -> comp Nothing  (Just y) `mappend` rest) mempty yy
 
                    
-isDFAFrontAnchored :: DFA -> Bool
-isDFAFrontAnchored = isDTFrontAnchored . d_dt
+isDFAFrontAnchored :: Bool -> DFA -> Bool
+isDFAFrontAnchored isMultiline = isDTFrontAnchored . d_dt
  where
   isDTFrontAnchored :: DT -> Bool
   isDTFrontAnchored (Simple' {}) = False
-  isDTFrontAnchored (Testing' {dt_test=wt,dt_a=a,dt_b=b}) | wt == Test_BOL = isDTLosing b
+  isDTFrontAnchored (Testing' {dt_test=wt,dt_a=a,dt_b=b}) | isAnchorTest = isDTLosing b
                                                           | otherwise = isDTFrontAnchored a && isDTFrontAnchored b
    where
+    -- Which tests are an anchor depends on if we are in multline mode or not. If not,
+    -- both ^ and \` are anchors, if we are, then only \` is an anchor
+    isAnchorTest
+      | isMultiline = wt == Test_BOB
+      | otherwise = wt == Test_BOB || wt == Test_BOL
     -- can DT never win or accept a character (when following trans_single)?
     isDTLosing :: DT -> Bool
     isDTLosing (Testing' {dt_a=a',dt_b=b'}) = isDTLosing a' && isDTLosing b'

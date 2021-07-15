@@ -21,6 +21,8 @@ import           Text.Regex.Base
 
 import qualified Text.Regex.TDFA      as TDFA
 
+import           AdditionalTests
+
 default(Int)
 
 type RSource = String
@@ -180,8 +182,10 @@ main = do
       putStrLn $ "    The first argument is the text to be searched."
       putStrLn $ "    The second argument is the regular expression pattern to search with."
       vals <- checkTests posix =<< readTestCases ("test" </> "cases")
-      if null (concatMap snd vals)
-        then putStrLn "\nWow, all the tests passed!"
+      anchorAndBoundaryTests <- runAdditionalTests 
+      if null (concatMap snd vals) && anchorAndBoundaryTests
+        then do
+          putStrLn "\nWow, all the tests passed!"
         else do
           putStrLn $ "\nBoo, tests failed!\n"++unlines (map show vals)
           exitFailure
